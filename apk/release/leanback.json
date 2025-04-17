@@ -1,5 +1,5 @@
 {
-  "code": 366,
-  "name": "3.6.6",
-  "desc": "* [Live]\n* Fix parse tvg-name"
+  "code": 367,
+  "name": "3.6.7",
+  "desc": "* [App]\n* Support digest auth"
 }
