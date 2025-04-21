@@ -1,5 +1,5 @@
 {
-  "code": 369,
-  "name": "3.6.9",
-  "desc": "* [App]\n* Optimize get ip"
+  "code": 370,
+  "name": "3.7.0",
+  "desc": "* [Vod]\n* Fix ending value bug"
 }
