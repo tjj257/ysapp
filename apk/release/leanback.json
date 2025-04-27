@@ -1,5 +1,5 @@
 {
-  "code": 379,
-  "name": "3.7.9",
-  "desc": "* [App]\n* Fix http server"
+  "code": 380,
+  "name": "3.8.0",
+  "desc": "* Revert icon"
 }
