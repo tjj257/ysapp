@@ -1,5 +1,5 @@
 {
-  "code": 384,
-  "name": "3.8.4",
-  "desc": "* [App]\n* Optimize okhttp\n* [Vod]\n* Fix danamku\n* [Live]\n* Fix m3u parser\n* Remove local://"
+  "code": 385,
+  "name": "3.8.5",
+  "desc": "* [Media3]\n* Optimize"
 }
