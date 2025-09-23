@@ -1,5 +1,5 @@
 {
-  "code": 423,
-  "name": "4.2.3",
-  "desc": "* 更新 glide\n* 更新 app icon\n* 平板設備播放介面新增動畫"
+  "code": 424,
+  "name": "4.2.4",
+  "desc": "* 新增 artwork\n* 更新 app icon\n* 修正影片標題滾動"
 }
