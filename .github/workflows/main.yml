@@ -1,33 +1,58 @@
-name: Sync Forks
+name: Sync Upstream Repositories
 
 on:
   schedule:
-    - cron: '0 0,6,12,18 * * *'
-  workflow_dispatch:
+    # 每天 0,6,12,18 点运行 (UTC 时间)
+    - cron: '0 6,12,18,0 * * *'
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   sync-fongmi:
+    name: Sync FongMi/Release (fongmi branch)
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Sync FongMi/Release
-        uses: tgymnich/fork-sync@v1.6
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          owner: FongMi  # 上游仓库所有者
-          repo: Release  # 上游仓库名
-          base: fongmi   # 上游分支
-          head: fongmi   # 您的分支（假设相同）
-          merge_method: hardreset  # 或 "merge", "rebase"
+    - name: Checkout current repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+        ref: fongmi  # 切换到 fongmi 分支
+        
+    - name: Add upstream remote (FongMi)
+      run: |
+        git remote add upstream https://github.com/FongMi/Release.git
+        git fetch upstream fongmi --depth=1
+        
+    - name: Merge upstream changes
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git merge upstream/fongmi --allow-unrelated-histories --no-edit || true
+        
+    - name: Push changes
+      run: git push origin fongmi
 
-  sync-fmapp:
+  sync-lystv:
+    name: Sync lystv/fmapp (ok branch)
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Sync lystv/fmapp
-        uses: tgymnich/fork-sync@v1.6
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          owner: lystv
-          repo: fmapp
-          base: ok
-          head: ok
-          merge_method: hardreset
+    - name: Checkout current repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+        ref: ok  # 切换到 ok 分支
+        
+    - name: Add upstream remote (lystv)
+      run: |
+        git remote add upstream https://github.com/lystv/fmapp.git
+        git fetch upstream ok --depth=1
+        
+    - name: Merge upstream changes
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git merge upstream/ok --allow-unrelated-histories --no-edit || true
+        
+    - name: Push changes
+      run: git push origin ok
