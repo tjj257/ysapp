@@ -1,0 +1,112 @@
+name: Sync Upstream Repositories
+
+on:
+  schedule:
+    # 每天 UTC 时间的 0, 6, 12, 18 点运行 (对应北京时间 8, 14, 20, 次日 2 点)
+    - cron: '0 0,6,12,18 * * *'
+  
+  # 允许手动触发此工作流
+  workflow_dispatch:
+    inputs:
+      sync_fongmi:
+        description: '同步 FongMi/Release (fongmi分支)'
+        type: boolean
+        default: true
+      sync_fmapp:
+        description: '同步 lystv/fmapp (ok分支)'
+        type: boolean
+        default: true
+
+# 设置必要的权限
+permissions:
+  contents: write  # 允许推送更改到仓库
+
+jobs:
+  sync-fongmi:
+    name: Sync FongMi/Release (fongmi分支)
+    runs-on: ubuntu-latest
+    
+    # 只有当手动触发时选择同步或计划触发时才运行
+    if: (github.event_name == 'workflow_dispatch' && github.event.inputs.sync_fongmi) || github.event_name == 'schedule'
+    
+    steps:
+      - name: Checkout 当前仓库
+        uses: actions/checkout@v4
+        with:
+          # 检出所有分支和提交历史
+          fetch-depth: 0
+          # 检出特定分支（假设您的本地分支也叫做 fongmi）
+          ref: fongmi
+      
+      - name: 配置 Git 用户
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: 添加上游仓库 FongMi/Release
+        run: git remote add upstream-fongmi https://github.com/FongMi/Release.git
+      
+      - name: 获取上游仓库更新
+        run: git fetch upstream-fongmi
+      
+      - name: 切换到 fongmi 分支
+        run: git checkout fongmi
+      
+      - name: 合并上游 fongmi 分支到本地分支
+        run: |
+          # 尝试合并，如果冲突则退出
+          if git merge upstream-fongmi/fongmi --no-ff --no-edit; then
+            echo "合并成功"
+          else
+            echo "合并冲突，尝试使用ours策略解决冲突"
+            # 如果合并冲突，使用上游的更改 (使用theirs会保留上游的更改)
+            git merge --abort
+            git merge upstream-fongmi/fongmi --strategy-option theirs --no-ff --no-edit
+          fi
+      
+      - name: 推送更新到您的仓库
+        run: git push origin fongmi
+  
+  sync-fmapp:
+    name: Sync lystv/fmapp (ok分支)
+    runs-on: ubuntu-latest
+    
+    # 只有当手动触发时选择同步或计划触发时才运行
+    if: (github.event_name == 'workflow_dispatch' && github.event.inputs.sync_fmapp) || github.event_name == 'schedule'
+    
+    steps:
+      - name: Checkout 当前仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # 检出特定分支（假设您的本地分支也叫做 ok）
+          ref: ok
+      
+      - name: 配置 Git 用户
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: 添加上游仓库 lystv/fmapp
+        run: git remote add upstream-fmapp https://github.com/lystv/fmapp.git
+      
+      - name: 获取上游仓库更新
+        run: git fetch upstream-fmapp
+      
+      - name: 切换到 ok 分支
+        run: git checkout ok
+      
+      - name: 合并上游 ok 分支到本地分支
+        run: |
+          # 尝试合并，如果冲突则退出
+          if git merge upstream-fmapp/ok --no-ff --no-edit; then
+            echo "合并成功"
+          else
+            echo "合并冲突，尝试使用ours策略解决冲突"
+            # 如果合并冲突，使用上游的更改
+            git merge --abort
+            git merge upstream-fmapp/ok --strategy-option theirs --no-ff --no-edit
+          fi
+      
+      - name: 推送更新到您的仓库
+        run: git push origin ok
