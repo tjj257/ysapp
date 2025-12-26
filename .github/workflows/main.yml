@@ -1,14 +1,13 @@
-name: Sync Upstream Repositories
+name: 同步fongmi/ok
 
 on:
   schedule:
-    # 每天 0,6,12,18 点运行 (UTC 时间)
     - cron: '0 6,12,18,0 * * *'
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   sync-fongmi:
-    name: Sync FongMi/Release (fongmi branch)
+    name: 同步fongmi
     runs-on: ubuntu-latest
     
     steps:
@@ -16,7 +15,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
-        ref: fongmi  # 切换到 fongmi 分支
+        ref: fongmi
         
     - name: Add upstream remote (FongMi)
       run: |
@@ -33,7 +32,7 @@ jobs:
       run: git push origin fongmi
 
   sync-lystv:
-    name: Sync lystv/fmapp (ok branch)
+    name: 同步ok
     runs-on: ubuntu-latest
     
     steps:
@@ -41,7 +40,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
-        ref: ok  # 切换到 ok 分支
+        ref: ok
         
     - name: Add upstream remote (lystv)
       run: |
