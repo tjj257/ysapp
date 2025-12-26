@@ -23,6 +23,41 @@ jobs:
         git remote add upstream https://github.com/FongMi/Release.git
         git fetch upstream fongmi --depth=1
         
+    - name: Check and update sync branch if needed
+      run: |
+        # 获取当前分支的上游仓库和分支
+        current_upstream_branch=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo "")
+        
+        if [ -n "$current_upstream_branch" ]; then
+          # 提取上游仓库名称
+          current_upstream=$(echo "$current_upstream_branch" | cut -d'/' -f1)
+          
+          # 检查是否与要同步的上游仓库一致
+          if [ "$current_upstream" != "upstream" ]; then
+            echo "当前分支的上游仓库($current_upstream)与要同步的上游仓库(upstream)不一致"
+            echo "正在更新上游仓库设置..."
+            
+            # 获取当前分支的远程名称和分支名
+            current_branch=$(git rev-parse --abbrev-ref HEAD)
+            current_remote=$(echo "$current_upstream_branch" | cut -d'/' -f1)
+            
+            # 删除旧的上游设置
+            git branch --unset-upstream
+            
+            # 设置新的上游仓库
+            git branch -u upstream/fongmi $current_branch
+            
+            echo "已更新上游仓库设置: $current_branch -> upstream/fongmi"
+          else
+            echo "当前分支的上游仓库设置正确，无需更改"
+          fi
+        else
+          echo "当前分支未设置上游仓库，正在设置..."
+          current_branch=$(git rev-parse --abbrev-ref HEAD)
+          git branch -u upstream/fongmi $current_branch
+          echo "已设置上游仓库: $current_branch -> upstream/fongmi"
+        fi
+        
     - name: Merge upstream changes
       run: |
         git config user.name "GitHub Actions"
@@ -47,6 +82,41 @@ jobs:
       run: |
         git remote add upstream https://github.com/lystv/fmapp.git
         git fetch upstream ok --depth=1
+        
+    - name: Check and update sync branch if needed
+      run: |
+        # 获取当前分支的上游仓库和分支
+        current_upstream_branch=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo "")
+        
+        if [ -n "$current_upstream_branch" ]; then
+          # 提取上游仓库名称
+          current_upstream=$(echo "$current_upstream_branch" | cut -d'/' -f1)
+          
+          # 检查是否与要同步的上游仓库一致
+          if [ "$current_upstream" != "upstream" ]; then
+            echo "当前分支的上游仓库($current_upstream)与要同步的上游仓库(upstream)不一致"
+            echo "正在更新上游仓库设置..."
+            
+            # 获取当前分支的远程名称和分支名
+            current_branch=$(git rev-parse --abbrev-ref HEAD)
+            current_remote=$(echo "$current_upstream_branch" | cut -d'/' -f1)
+            
+            # 删除旧的上游设置
+            git branch --unset-upstream
+            
+            # 设置新的上游仓库
+            git branch -u upstream/ok $current_branch
+            
+            echo "已更新上游仓库设置: $current_branch -> upstream/ok"
+          else
+            echo "当前分支的上游仓库设置正确，无需更改"
+          fi
+        else
+          echo "当前分支未设置上游仓库，正在设置..."
+          current_branch=$(git rev-parse --abbrev-ref HEAD)
+          git branch -u upstream/ok $current_branch
+          echo "已设置上游仓库: $current_branch -> upstream/ok"
+        fi
         
     - name: Merge upstream changes
       run: |
